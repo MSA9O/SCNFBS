@@ -1,0 +1,36 @@
+{
+    "name": "Building E – Student Center",
+    "floors": ["G", "1", "2"],
+    "coordinates": {
+        "Food Court": [150, 200],
+        "Elevator": [250, 200],
+        "Stairs": [450, 200],
+        "Cafeteria A": [150, 100],
+        "Café B": [150, 300],
+        "Clubs & Wellness": [350, 100],
+        "Prayer Room": [450, 100],
+        "Health Clinic": [550, 100],
+        "Student Activity Area": [350, 300],
+        "Lounge 201": [450, 300],
+        "Room 202": [550, 300],
+        "Study Room E": [50, 200]
+    },
+    "paths": [
+        { "from": "Food Court", "to": "Elevator", "floor": "G", "distance": 10, "accessible": true },
+        { "from": "Food Court", "to": "Cafeteria A", "floor": "G", "distance": 5, "accessible": true },
+        { "from": "Food Court", "to": "Café B", "floor": "G", "distance": 5, "accessible": true },
+        { "from": "Food Court", "to": "Study Room E", "floor": "G", "distance": 7, "accessible": true },
+        { "from": "Elevator", "to": "Elevator", "floor": "1", "distance": 0, "accessible": true },
+        { "from": "Stairs", "to": "Stairs", "floor": "1", "distance": 0, "accessible": false },
+        { "from": "Elevator", "to": "Clubs & Wellness", "floor": "1", "distance": 8, "accessible": true },
+        { "from": "Stairs", "to": "Clubs & Wellness", "floor": "1", "distance": 8, "accessible": true },
+        { "from": "Clubs & Wellness", "to": "Prayer Room", "floor": "1", "distance": 5, "accessible": true },
+        { "from": "Prayer Room", "to": "Health Clinic", "floor": "1", "distance": 7, "accessible": true },
+        { "from": "Elevator", "to": "Elevator", "floor": "2", "distance": 0, "accessible": true },
+        { "from": "Stairs", "to": "Stairs", "floor": "2", "distance": 0, "accessible": false },
+        { "from": "Elevator", "to": "Student Activity Area", "floor": "2", "distance": 8, "accessible": true },
+        { "from": "Stairs", "to": "Student Activity Area", "floor": "2", "distance": 8, "accessible": true },
+        { "from": "Student Activity Area", "to": "Lounge 201", "floor": "2", "distance": 5, "accessible": true },
+        { "from": "Lounge 201", "to": "Room 202", "floor": "2", "distance": 7, "accessible": true }
+    ]
+}

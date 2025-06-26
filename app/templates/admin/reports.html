@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Utilization Reports{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Facility Utilization Reports</h2>
+
+<div class="card">
+    <div class="card-header">
+        Bookings Per Facility
+    </div>
+    <div class="card-body">
+        <p class="card-text">This table shows the total number of bookings for each facility, ordered from most to least popular.</p>
+        
+        {% if bookings_per_room %}
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Facility Name</th>
+                    <th scope="col">Building</th>
+                    <th scope="col">Total Bookings</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for room in bookings_per_room %}
+                <tr>
+                    <th scope="row">{{ loop.index }}</th>
+                    <td>{{ room.name }}</td>
+                    <td>{{ room.building_name }}</td>
+                    <td>{{ room.booking_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-info">No bookings have been made yet.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

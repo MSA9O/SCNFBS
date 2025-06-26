@@ -1,0 +1,35 @@
+{
+    "name": "Building C – Library Complex",
+    "floors": ["G", "1", "2"],
+    "coordinates": {
+        "Public Access Area": [100, 225],
+        "Elevator": [200, 150],
+        "Stairs": [200, 300],
+        "Info Desk": [200, 225],
+        "Study Room G01": [300, 225],
+        "General Collection": [300, 150],
+        "Study Room 101": [400, 150],
+        "Research Room 102": [500, 150],
+        "Silent Zone": [300, 300],
+        "Study Room 201": [400, 300],
+        "Archive Room 202": [500, 300],
+        "Study Room C": [500, 225]
+    },
+    "paths": [
+        { "from": "Public Access Area", "to": "Info Desk", "floor": "G", "distance": 10, "accessible": true },
+        { "from": "Info Desk", "to": "Elevator", "floor": "G", "distance": 5, "accessible": true },
+        { "from": "Info Desk", "to": "Stairs", "floor": "G", "distance": 5, "accessible": false },
+        { "from": "Info Desk", "to": "Study Room G01", "floor": "G", "distance": 7, "accessible": true },
+        { "from": "Elevator", "to": "Elevator", "floor": "1", "distance": 0, "accessible": true },
+        { "from": "Stairs", "to": "Stairs", "floor": "1", "distance": 0, "accessible": false },
+        { "from": "Elevator", "to": "General Collection", "floor": "1", "distance": 8, "accessible": true },
+        { "from": "General Collection", "to": "Study Room 101", "floor": "1", "distance": 5, "accessible": true },
+        { "from": "Study Room 101", "to": "Research Room 102", "floor": "1", "distance": 7, "accessible": true },
+        { "from": "Info Desk", "to": "Study Room C", "floor": "G", "distance": 12, "accessible": true },
+        { "from": "Elevator", "to": "Elevator", "floor": "2", "distance": 0, "accessible": true },
+        { "from": "Stairs", "to": "Stairs", "floor": "2", "distance": 0, "accessible": false },
+        { "from": "Stairs", "to": "Silent Zone", "floor": "2", "distance": 8, "accessible": false },
+        { "from": "Silent Zone", "to": "Study Room 201", "floor": "2", "distance": 5, "accessible": true },
+        { "from": "Study Room 201", "to": "Archive Room 202", "floor": "2", "distance": 7, "accessible": true }
+    ]
+}

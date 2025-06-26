@@ -1,0 +1,7 @@
+<h3>Booking Canceled</h3>
+<p>Hi {{ user.name }},</p>
+<p>
+    This email confirms that your booking for <b>{{ booking.room.name }}</b>
+    from {{ booking.start_time.strftime('%Y-%m-%d %I:%M %p') }} has been canceled.
+</p>
+<p>Thank you.</p>

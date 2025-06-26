@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Book a Facility{% endblock %}
+
+{% block content %}
+<h2>Book a Facility</h2>
+
+<form method="POST" class="mt-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="room-select" class="form-label">Facility</label>
+                <select name="room_id" id="room-select" class="form-select" required>
+                    <option value="" disabled selected>-- Select a facility --</option>
+                    {% for room in rooms %}
+                    <option value="{{ room.id }}">{{ room.building.name }} / {{ room.name }} ({{ room.type }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="start-time" class="form-label">Start Date and Time</label>
+                <input type="datetime-local" id="start-time" name="start_time" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="duration" class="form-label">Duration (hours)</label>
+                <input type="number" id="duration" name="duration" min="1" max="{{ max_duration }}" class="form-control" required>
+                <div class="form-text">Max duration for your role: {{ max_duration }} hours.</div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <fieldset class="border p-3 rounded">
+                <legend class="w-auto px-2 fs-6">Recurrence Options</legend>
+                <div class="mb-3">
+                    <label for="recurrence_type" class="form-label">Repeat</label>
+                    <select name="recurrence_type" id="recurrence_type" class="form-select">
+                        <option value="none" selected>Does not repeat</option>
+                        <option value="weekly">Weekly</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="recurrence_count" class="form-label">Number of Repetitions</label>
+                    <input type="number" id="recurrence_count" name="recurrence_count" min="1" max="12" class="form-control" value="4">
+                    <div class="form-text">How many times should this event repeat? (Max 12 weeks)</div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Book Facility</button>
+</form>
+{% endblock %}

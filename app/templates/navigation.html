@@ -1,0 +1,286 @@
+{% extends "base.html" %}
+{% block title %}Campus Navigation{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Campus Navigation</h2>
+
+<form method="post" class="row g-3 align-items-center mb-4 p-3 border rounded bg-light">
+  <div class="col-md-4">
+    <label class="form-label" for="start-select">From</label>
+    <select name="start" id="start-select" class="form-select" required>
+      <option value="" disabled {{ 'selected' if not selected_start }}>Select start point</option>
+      {% for loc in locations %}
+        <option value="{{ loc }}" {{ 'selected' if selected_start == loc }}>{{ loc }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-4">
+    <label class="form-label" for="dest-select">To</label>
+    <select name="destination" id="dest-select" class="form-select" required>
+      <option value="" disabled {{ 'selected' if not selected_dest }}>Select destination</option>
+      {% for loc in locations %}
+        <option value="{{ loc }}" {{ 'selected' if selected_dest == loc }}>{{ loc }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2 form-check mt-4 ms-3">
+    <input class="form-check-input" type="checkbox" value="1" id="accessible" name="accessible" {{ 'checked' if accessible else '' }}>
+    <label class="form-check-label" for="accessible">♿ Accessible Route</label>
+  </div>
+  <div class="col-md-1 d-grid">
+    <button type="submit" class="btn btn-primary mt-4">Find</button>
+  </div>
+</form>
+
+<div class="row">
+  <div class="col-lg-7">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+      <h4 id="map-title">Campus Map</h4>
+      <div id="floor-controls" class="btn-group" role="group" style="display: none;">
+        <!-- Floor buttons will be inserted here by JS -->
+      </div>
+    </div>
+    <div id="map-container" style="position: relative;">
+      <canvas id="campusMap" width="600" height="450" class="border rounded bg-white shadow-sm"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-5 mt-4 mt-lg-0">
+    <h4>Route Details</h4>
+    {% if path %}
+    <div class="card">
+      <div class="card-header fw-semibold">
+        Route from {{ selected_start }} to {{ selected_dest }} (Total Distance: ~{{ distance }}m)
+      </div>
+      <div class="card-body p-0">
+        {% if steps %}
+        <ol id="route-steps-list" class="list-group list-group-numbered list-group-flush">
+          {% for step in steps %}
+            {#- Add data attributes to each step for the JS to use -#}
+            <li class="list-group-item list-group-item-action" 
+                style="cursor: pointer;"
+                data-step-index="{{ loop.index0 }}"
+                data-node="{{ path[loop.index0] }}">
+                {{ step.text }}
+            </li>
+          {% endfor %}
+        </ol>
+        {% else %}
+        <p class="p-3">Could not generate directions for this path.</p>
+        {% endif %}
+      </div>
+    </div>
+    {% elif request.method == 'POST' %}
+    <div class="alert alert-warning">
+      <strong>No path found.</strong> The destination may not be reachable.
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+      Select a start and end point to find a route.
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // =================================================================
+    // 1. SETUP & DATA INITIALIZATION
+    // =================================================================
+    const canvas = document.getElementById('campusMap');
+    const mapTitle = document.getElementById('map-title');
+    const floorControls = document.getElementById('floor-controls');
+    const routeList = document.getElementById('route-steps-list');
+    const ctx = canvas.getContext('2d');
+    
+    // Raw data from Flask
+    const initialMapType = {{ map_type | tojson }};
+    const initialMapData = {{ map_data | tojson }};
+    const calculatedPath = {{ path | tojson }};
+    
+    // State variables that will change
+    let currentMapData = initialMapData;
+    let activeFloor = null;
+    let currentBuildingName = null;
+    let activeStepIndex = 0;
+
+    if (!initialMapData) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.textAlign = 'center'; ctx.fillStyle = '#6c757d'; ctx.font = '16px Arial';
+        ctx.fillText('Select a route to view map details.', canvas.width / 2, canvas.height / 2);
+        return;
+    }
+
+    const startNode = calculatedPath.length > 0 ? calculatedPath[0] : null;
+    const endNode = calculatedPath.length > 0 ? calculatedPath[calculatedPath.length - 1] : null;
+
+    const campusBuildingCoords = {
+        "Building A": [100, 150], "Building B": [300, 150],
+        "Building C": [300, 300], "Building D": [100, 300], "Building E": [500, 225],
+    };
+
+    // Store all building data fetched from the server to avoid re-fetching
+    const buildingDataCache = {};
+
+    // =================================================================
+    // 2. CANVAS DRAWING UTILITIES
+    // =================================================================
+    function getWrappedText(context, text, maxWidth) { /* ... no changes ... */ }
+    function drawNode(label, x, y, options = {}) { /* ... no changes ... */ }
+    function drawLine(p1, p2, options = {}) { /* ... no changes ... */ }
+    // (Functions from previous step are assumed to be here)
+    function getWrappedText(context,text,maxWidth){const words=text.split(' ');const lines=[];let currentLine=words[0];for(let i=1;i<words.length;i++){const word=words[i];const width=context.measureText(currentLine+" "+word).width;if(width<maxWidth){currentLine+=" "+word}else{lines.push(currentLine);currentLine=word}}lines.push(currentLine);return lines}
+    function drawNode(label,x,y,options={}){const{color='#6c757d',textColor='white',font='11px Arial',padding=8,cornerRadius=5,maxWidth=80}=options;ctx.font=font;const lines=getWrappedText(ctx,label,maxWidth);const textHeight=lines.length*12;const nodeHeight=textHeight+padding*2;const nodeWidth=maxWidth+padding*2;const startX=x-nodeWidth/2;const startY=y-nodeHeight/2;ctx.beginPath();ctx.moveTo(startX+cornerRadius,startY);ctx.lineTo(startX+nodeWidth-cornerRadius,startY);ctx.quadraticCurveTo(startX+nodeWidth,startY,startX+nodeWidth,startY+cornerRadius);ctx.lineTo(startX+nodeWidth,startY+nodeHeight-cornerRadius);ctx.quadraticCurveTo(startX+nodeWidth,startY+nodeHeight,startX+nodeWidth-cornerRadius,startY+nodeHeight);ctx.lineTo(startX+cornerRadius,startY+nodeHeight);ctx.quadraticCurveTo(startX,startY+nodeHeight,startX,startY+nodeHeight-cornerRadius);ctx.lineTo(startX,startY+cornerRadius);ctx.quadraticCurveTo(startX,startY,startX+cornerRadius,startY);ctx.closePath();ctx.fillStyle=color;ctx.fill();ctx.fillStyle=textColor;ctx.textAlign='center';ctx.textBaseline='middle';let textY=y-(textHeight/2)+6;for(const line of lines){ctx.fillText(line,x,textY);textY+=12}}
+    function drawLine(p1,p2,options={}){if(!p1||!p2)return;const{color='#adb5bd',width=2}=options;ctx.beginPath();ctx.moveTo(p1[0],p1[1]);ctx.lineTo(p2[0],p2[1]);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke()}
+
+
+    // =================================================================
+    // 3. MAP VIEW RENDERERS
+    // =================================================================
+    function drawCampusView(campusData) {
+        currentMapData = campusData;
+        currentBuildingName = null; // We are at the campus level
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        mapTitle.innerText = 'Campus Overview';
+        floorControls.style.display = 'none';
+        const coords = campusBuildingCoords;
+        const paths = campusData.paths || [];
+        paths.forEach(p => drawLine(coords[p.from], coords[p.to]));
+
+        // Highlight path segment if active step is between buildings
+        const activeNode = calculatedPath[activeStepIndex];
+        const nextNode = calculatedPath[activeStepIndex + 1];
+        if (activeNode && nextNode) {
+            const b1 = activeNode.split(' / ')[0];
+            const b2 = nextNode.split(' / ')[0];
+            if (b1 !== b2 && coords[b1] && coords[b2]) {
+                 drawLine(coords[b1], coords[b2], { color: '#0d6efd', width: 5 });
+            }
+        }
+        
+        Object.entries(coords).forEach(([name, pos]) => {
+            let color = '#6c757d';
+            if (calculatedPath.map(p => p.split(' / ')[0]).includes(name)) color = '#0d6efd';
+            if (startNode && name === startNode.split(' / ')[0]) color = '#198754';
+            if (endNode && name === endNode.split(' / ')[0]) color = '#dc3545';
+            
+            ctx.beginPath(); ctx.arc(pos[0], pos[1], 25, 0, Math.PI*2); ctx.fillStyle = color; ctx.fill();
+            ctx.fillStyle = 'white'; ctx.font = 'bold 14px Arial'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(name.replace('Building ', ''), pos[0], pos[1]);
+        });
+    }
+
+    function drawBuildingView(buildingData, floor) {
+        currentMapData = buildingData;
+        currentBuildingName = buildingData.name;
+        activeFloor = floor;
+        setupFloorControls();
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        mapTitle.innerText = `${buildingData.name} - Floor ${floor}`;
+        const coords = buildingData.coordinates;
+        const floorPaths = buildingData.paths.filter(p => p.floor === floor);
+        floorPaths.forEach(p => drawLine(coords[p.from], coords[p.to]));
+
+        // Highlight current path segment
+        const activeNode = calculatedPath[activeStepIndex];
+        const nextNode = calculatedPath[activeStepIndex + 1];
+        if (activeNode && nextNode) {
+            const fromName = activeNode.split(' / ')[1]?.split('@')[0];
+            const toName = nextNode.split(' / ')[1]?.split('@')[0];
+            if (fromName && toName) {
+                 const pathOnThisFloor = floorPaths.find(p => (p.from === fromName && p.to === toName) || (p.from === toName && p.to === fromName));
+                 if (pathOnThisFloor) {
+                    drawLine(coords[fromName], coords[toName], { color: '#0d6efd', width: 5 });
+                 }
+            }
+        }
+        
+        const floorNodes = new Set(floorPaths.flatMap(p => [p.from, p.to]));
+        floorNodes.forEach(name => {
+            const fullName = `${buildingData.name} / ${name}`;
+            let color = '#6c757d';
+            if (startNode && (startNode.startsWith(fullName))) color = '#198754';
+            if (endNode && (endNode.startsWith(fullName))) color = '#dc3545';
+            drawNode(name.replace(/ - /g, ' '), coords[name][0], coords[name][1], {color});
+        });
+    }
+
+    function setupFloorControls() {
+        floorControls.style.display = 'flex';
+        floorControls.innerHTML = '';
+        currentMapData.floors.forEach(floor => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'btn btn-sm btn-outline-secondary';
+            btn.innerText = `Floor ${floor}`;
+            if (floor === activeFloor) btn.classList.add('active');
+            btn.onclick = () => drawBuildingView(currentMapData, floor);
+            floorControls.appendChild(btn);
+        });
+    }
+    
+    // =================================================================
+    // 4. INTERACTIVITY & INITIALIZATION
+    // =================================================================
+
+    async function updateMapForStep(stepIndex) {
+        activeStepIndex = stepIndex;
+        // Highlight the active step in the list
+        document.querySelectorAll('#route-steps-list li').forEach((li, index) => {
+            li.classList.toggle('active', index === stepIndex);
+        });
+
+        const node = calculatedPath[stepIndex];
+        const buildingName = node.split(' / ')[0];
+        const isCampusLevel = !node.includes('/');
+
+        if (isCampusLevel || !buildingName.startsWith("Building")) {
+            drawCampusView(initialMapData); // Always use initial data for campus
+        } else {
+            // If we are already showing the correct building, just redraw
+            if (buildingName === currentBuildingName) {
+                drawBuildingView(currentMapData, activeFloor);
+                return;
+            }
+            // Otherwise, fetch new building data
+            if (!buildingDataCache[buildingName]) {
+                const response = await fetch(`/navigation/data/${buildingName.replace(' ', '_')}`);
+                buildingDataCache[buildingName] = await response.json();
+            }
+            const buildingData = buildingDataCache[buildingName];
+            const floorMatch = node.match(/@(\w+)$/);
+            const floor = floorMatch ? floorMatch[1] : buildingData.floors[0];
+            drawBuildingView(buildingData, floor);
+        }
+    }
+    
+    if (routeList) {
+        routeList.addEventListener('click', (e) => {
+            const stepItem = e.target.closest('li');
+            if (stepItem) {
+                const stepIndex = parseInt(stepItem.dataset.stepIndex);
+                updateMapForStep(stepIndex);
+            }
+        });
+        // Highlight first step by default
+        updateMapForStep(0);
+    } else {
+        // Fallback for pages without a route yet
+        if (initialMapType === 'building') {
+            drawBuildingView(initialMapData, initialMapData.floors[0]);
+        } else {
+            drawCampusView(initialMapData);
+        }
+    }
+});
+</script>
+
+<style>
+/* Optional: Style for the active route step */
+#route-steps-list .list-group-item.active {
+    background-color: #e7f1ff;
+    border-color: #0d6efd;
+    font-weight: bold;
+}
+</style>
+{% endblock %}

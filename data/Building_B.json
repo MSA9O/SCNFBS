@@ -1,0 +1,37 @@
+{
+    "name": "Building B – Science & Math",
+    "floors": ["G", "1", "2"],
+    "coordinates": {
+        "Entrance Hall": [100, 200],
+        "Elevator": [200, 200],
+        "Stairs": [400, 200],
+        "Room G01": [100, 100],
+        "Office G02": [100, 300],
+        "Chemistry Wing": [300, 100],
+        "Lab 101": [400, 100],
+        "Room 102": [500, 100],
+        "Physics Labs": [300, 300],
+        "Lab 201": [400, 300],
+        "Lab 202": [500, 300],
+        "Study Room B": [300, 400]
+    },
+    "paths": [
+        { "from": "Entrance Hall", "to": "Elevator", "floor": "G", "distance": 10, "accessible": true },
+        { "from": "Entrance Hall", "to": "Stairs", "floor": "G", "distance": 20, "accessible": true },
+        { "from": "Entrance Hall", "to": "Room G01", "floor": "G", "distance": 5, "accessible": true },
+        { "from": "Entrance Hall", "to": "Office G02", "floor": "G", "distance": 5, "accessible": true },
+        { "from": "Elevator", "to": "Elevator", "floor": "1", "distance": 0, "accessible": true },
+        { "from": "Stairs", "to": "Stairs", "floor": "1", "distance": 0, "accessible": false },
+        { "from": "Elevator", "to": "Chemistry Wing", "floor": "1", "distance": 7, "accessible": true },
+        { "from": "Stairs", "to": "Chemistry Wing", "floor": "1", "distance": 7, "accessible": true },
+        { "from": "Chemistry Wing", "to": "Lab 101", "floor": "1", "distance": 5, "accessible": true },
+        { "from": "Lab 101", "to": "Room 102", "floor": "1", "distance": 7, "accessible": true },
+        { "from": "Elevator", "to": "Elevator", "floor": "2", "distance": 0, "accessible": true },
+        { "from": "Stairs", "to": "Stairs", "floor": "2", "distance": 0, "accessible": false },
+        { "from": "Elevator", "to": "Physics Labs", "floor": "2", "distance": 7, "accessible": true },
+        { "from": "Stairs", "to": "Physics Labs", "floor": "2", "distance": 7, "accessible": true },
+        { "from": "Physics Labs", "to": "Lab 201", "floor": "2", "distance": 5, "accessible": true },
+        { "from": "Physics Labs", "to": "Study Room B", "floor": "2", "distance": 4, "accessible": true },
+        { "from": "Lab 201", "to": "Lab 202", "floor": "2", "distance": 7, "accessible": true }
+    ]
+}

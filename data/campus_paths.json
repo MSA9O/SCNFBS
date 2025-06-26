@@ -1,0 +1,13 @@
+{
+  "paths": [
+    { "from": "Building A", "to": "Building B", "distance": 40, "kind": "walk", "accessible": true },
+    { "from": "Building B", "to": "Building C", "distance": 45, "kind": "walk", "accessible": true },
+    { "from": "Building C", "to": "Building D", "distance": 50, "kind": "ramp", "accessible": true },
+    { "from": "Building D", "to": "Building E", "distance": 60, "kind": "walk", "accessible": true },
+    { "from": "Building A", "to": "Building C", "distance": 80, "kind": "walk", "accessible": true },
+    { "from": "Building A", "to": "Building D", "distance": 95, "kind": "walk", "accessible": true },
+    { "from": "Building B", "to": "Building D", "distance": 75, "kind": "ramp", "accessible": true },
+    { "from": "Building B", "to": "Building E", "distance": 110, "kind": "walk", "accessible": true },
+    { "from": "Building C", "to": "Building E", "distance": 100, "kind": "walk", "accessible": true }
+  ]
+}

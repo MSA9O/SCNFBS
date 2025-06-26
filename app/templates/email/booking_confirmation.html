@@ -1,0 +1,11 @@
+<h3>Booking Confirmed!</h3>
+<p>Hi {{ user.name }},</p>
+<p>
+    This is a confirmation that your booking for the facility <b>{{ booking.room.name }}</b> in
+    <b>{{ booking.room.building.name }}</b> has been successful.
+</p>
+<p>
+    <b>Start Time:</b> {{ booking.start_time.strftime('%Y-%m-%d %I:%M %p') }}<br>
+    <b>End Time:</b> {{ booking.end_time.strftime('%Y-%m-%d %I:%M %p') }}
+</p>
+<p>Thank you for using the SCNFBS system.</p>

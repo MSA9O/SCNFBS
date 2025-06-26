@@ -1,0 +1,35 @@
+{
+    "name": "Building D – Admin Block",
+    "floors": ["G", "1", "2"],
+    "coordinates": {
+        "Main Lobby": [150, 225],
+        "Elevator": [250, 225],
+        "Stairs": [450, 150],
+        "Office G01": [150, 125],
+        "Auditorium": [150, 325],
+        "Registrar Offices": [350, 150],
+        "Room 101": [350, 50],
+        "Room 102": [450, 50],
+        "Meeting Rooms": [350, 225],
+        "Room 201": [350, 325],
+        "Conference Room 202": [450, 325],
+        "Study Room D": [50, 225]
+    },
+    "paths": [
+        { "from": "Main Lobby", "to": "Elevator", "floor": "G", "distance": 8, "accessible": true },
+        { "from": "Main Lobby", "to": "Office G01", "floor": "G", "distance": 5, "accessible": true },
+        { "from": "Main Lobby", "to": "Auditorium", "floor": "G", "distance": 5, "accessible": true },
+        { "from": "Main Lobby", "to": "Study Room D", "floor": "G", "distance": 6, "accessible": true },
+        { "from": "Elevator", "to": "Elevator", "floor": "1", "distance": 0, "accessible": true },
+        { "from": "Stairs", "to": "Stairs", "floor": "1", "distance": 0, "accessible": false },
+        { "from": "Elevator", "to": "Registrar Offices", "floor": "1", "distance": 6, "accessible": true },
+        { "from": "Registrar Offices", "to": "Stairs", "floor": "1", "distance": 6, "accessible": false },
+        { "from": "Registrar Offices", "to": "Room 101", "floor": "1", "distance": 5, "accessible": true },
+        { "from": "Room 101", "to": "Room 102", "floor": "1", "distance": 7, "accessible": true },
+        { "from": "Elevator", "to": "Elevator", "floor": "2", "distance": 0, "accessible": true },
+        { "from": "Stairs", "to": "Stairs", "floor": "2", "distance": 0, "accessible": false },
+        { "from": "Elevator", "to": "Meeting Rooms", "floor": "2", "distance": 6, "accessible": true },
+        { "from": "Meeting Rooms", "to": "Room 201", "floor": "2", "distance": 5, "accessible": true },
+        { "from": "Room 201", "to": "Conference Room 202", "floor": "2", "distance": 7, "accessible": true }
+    ]
+}

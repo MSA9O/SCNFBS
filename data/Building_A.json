@@ -1,0 +1,37 @@
+{
+    "name": "Building A",
+    "floors": ["G", "1", "2"],
+    "coordinates": {
+        "Main Entrance": [50, 200],
+        "Lobby": [150, 200],
+        "Room G01 - Reception": [150, 100],
+        "Room G02 - Security": [150, 300],
+        "Elevator": [250, 150],
+        "Stairs": [250, 250],
+        "Room 101 - Faculty Office": [350, 150],
+        "Room 102 - Classroom": [450, 150],
+        "Room 201 - Auditorium": [350, 250],
+        "Room 202 - Student Lounge": [450, 250],
+        "Study Room A": [350, 50]
+    },
+    "paths": [
+        { "from": "Main Entrance", "to": "Lobby", "floor": "G", "distance": 10, "accessible": true },
+        { "from": "Lobby", "to": "Elevator", "floor": "G", "distance": 5, "accessible": true },
+        { "from": "Lobby", "to": "Stairs", "floor": "G", "distance": 5, "accessible": false },
+        { "from": "Lobby", "to": "Room G01 - Reception", "floor": "G", "distance": 7, "accessible": true },
+        { "from": "Lobby", "to": "Room G02 - Security", "floor": "G", "distance": 7, "accessible": true },
+        { "from": "Elevator", "to": "Elevator", "floor": "1", "distance": 0, "accessible": true },
+        { "from": "Stairs", "to": "Stairs", "floor": "1", "distance": 0, "accessible": false },
+        { "from": "Elevator", "to": "Room 101 - Faculty Office", "floor": "1", "distance": 8, "accessible": true },
+        { "from": "Elevator", "to": "Room 102 - Classroom", "floor": "1", "distance": 8, "accessible": true },
+        { "from": "Elevator", "to": "Study Room A", "floor": "1", "distance": 6, "accessible": true },
+        { "from": "Stairs", "to": "Room 101 - Faculty Office", "floor": "1", "distance": 8, "accessible": false },
+        { "from": "Stairs", "to": "Room 102 - Classroom", "floor": "1", "distance": 8, "accessible": false },
+        { "from": "Elevator", "to": "Elevator", "floor": "2", "distance": 0, "accessible": true },
+        { "from": "Stairs", "to": "Stairs", "floor": "2", "distance": 0, "accessible": false },
+        { "from": "Elevator", "to": "Room 201 - Auditorium", "floor": "2", "distance": 8, "accessible": true },
+        { "from": "Elevator", "to": "Room 202 - Student Lounge", "floor": "2", "distance": 8, "accessible": true },
+        { "from": "Stairs", "to": "Room 201 - Auditorium", "floor": "2", "distance": 8, "accessible": false },
+        { "from": "Stairs", "to": "Room 202 - Student Lounge", "floor": "2", "distance": 8, "accessible": false }
+    ]
+}

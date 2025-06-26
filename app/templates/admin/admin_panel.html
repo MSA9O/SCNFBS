@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Admin Panel{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Admin Panel</h2>
+
+<!-- Buildings Management -->
+<div class="card mb-4">
+    <div class="card-header"><h4>Buildings</h4></div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('admin.add_building') }}" class="row g-3 mb-3">
+            <div class="col-auto"><input type="text" class="form-control" name="name" placeholder="Building name" required></div>
+            <div class="col-auto"><button type="submit" class="btn btn-sm btn-primary">Add Building</button></div>
+        </form>
+        <ul>
+            {% for b in buildings %}
+                <li>{{ b.name }}</li>
+            {% else %}
+                <li>No buildings found.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+<!-- Rooms Management -->
+<div class="card mb-4">
+    <div class="card-header"><h4>Rooms</h4></div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('admin.add_room') }}" class="row g-3 mb-3">
+            <div class="col-auto">
+                <select name="building_id" class="form-select" required>
+                    <option value="" disabled selected>Select Building</option>
+                    {% for b in buildings %}<option value="{{ b.id }}">{{ b.name }}</option>{% endfor %}
+                </select>
+            </div>
+            <div class="col-auto"><input type="text" name="name" class="form-control" placeholder="Room name" required></div>
+            <div class="col-auto">
+                <select name="type" class="form-select">
+                    <option value="Room">Room</option>
+                    <option value="Lab">Lab</option>
+                    <option value="Auditorium">Auditorium</option>
+                    <option value="Study">Study Room</option>
+                </select>
+            </div>
+            <div class="col-auto"><input type="number" name="capacity" class="form-control" placeholder="Capacity" required></div>
+            <div class="col-auto"><button type="submit" class="btn btn-sm btn-primary">Add Room</button></div>
+        </form>
+    </div>
+</div>
+
+<!-- Users Management -->
+<div class="card mb-4">
+    <div class="card-header"><h4>Users</h4></div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('admin.add_user') }}" class="row g-3 mb-3">
+            <div class="col-auto"><input type="text" name="name" class="form-control" placeholder="Name" required></div>
+            <div class="col-auto"><input type="email" name="email" class="form-control" placeholder="Email" required></div>
+            <div class="col-auto"><input type="password" name="password" class="form-control" placeholder="Password" required></div>
+            <div class="col-auto">
+                <select name="role" class="form-select">
+                    <option value="Student">Student</option>
+                    <option value="Faculty">Faculty</option>
+                    <option value="Admin">Admin</option>
+                </select>
+            </div>
+            <div class="col-auto"><button type="submit" class="btn btn-sm btn-primary">Add User</button></div>
+        </form>
+    </div>
+</div>
+
+<!-- Booking Rules Management -->
+<div class="card mb-4">
+    <div class="card-header"><h4>Booking Rules</h4></div>
+    <div class="card-body">
+        <p class="text-muted small">Define the maximum booking duration (in hours) for each user role.</p>
+        <form method="POST" action="{{ url_for('admin.update_rule') }}" class="row g-3 mb-3">
+            <div class="col-auto">
+                <select name="role" class="form-select">
+                    <option value="Student">Student</option>
+                    <option value="Faculty">Faculty</option>
+                    <option value="Admin">Admin</option>
+                </select>
+            </div>
+            <div class="col-auto"><input type="number" name="max_hours" class="form-control" placeholder="Max hours" min="1" required></div>
+            <div class="col-auto"><button type="submit" class="btn btn-sm btn-primary">Set/Update Rule</button></div>
+        </form>
+        <ul>
+            {% for r in rules %}
+                <li><strong>{{ r.role }}</strong> can book for a maximum of <strong>{{ r.max_hours }}</strong> hours.</li>
+            {% else %}
+                <li>No booking rules defined.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

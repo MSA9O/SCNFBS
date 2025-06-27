@@ -83,21 +83,16 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // =================================================================
-    // 1. SETUP & DATA INITIALIZATION
-    // =================================================================
     const canvas = document.getElementById('campusMap');
     const mapTitle = document.getElementById('map-title');
     const floorControls = document.getElementById('floor-controls');
     const routeList = document.getElementById('route-steps-list');
     const ctx = canvas.getContext('2d');
     
-    // Raw data from Flask
     const initialMapType = {{ map_type | tojson }};
     const initialMapData = {{ map_data | tojson }};
     const calculatedPath = {{ path | tojson }};
     
-    // State variables that will change
     let currentMapData = initialMapData;
     let activeFloor = null;
     let currentBuildingName = null;
@@ -118,27 +113,20 @@ document.addEventListener('DOMContentLoaded', function () {
         "Building C": [300, 300], "Building D": [100, 300], "Building E": [500, 225],
     };
 
-    // Store all building data fetched from the server to avoid re-fetching
     const buildingDataCache = {};
 
-    // =================================================================
-    // 2. CANVAS DRAWING UTILITIES
-    // =================================================================
+    
     function getWrappedText(context, text, maxWidth) { /* ... no changes ... */ }
     function drawNode(label, x, y, options = {}) { /* ... no changes ... */ }
     function drawLine(p1, p2, options = {}) { /* ... no changes ... */ }
-    // (Functions from previous step are assumed to be here)
     function getWrappedText(context,text,maxWidth){const words=text.split(' ');const lines=[];let currentLine=words[0];for(let i=1;i<words.length;i++){const word=words[i];const width=context.measureText(currentLine+" "+word).width;if(width<maxWidth){currentLine+=" "+word}else{lines.push(currentLine);currentLine=word}}lines.push(currentLine);return lines}
     function drawNode(label,x,y,options={}){const{color='#6c757d',textColor='white',font='11px Arial',padding=8,cornerRadius=5,maxWidth=80}=options;ctx.font=font;const lines=getWrappedText(ctx,label,maxWidth);const textHeight=lines.length*12;const nodeHeight=textHeight+padding*2;const nodeWidth=maxWidth+padding*2;const startX=x-nodeWidth/2;const startY=y-nodeHeight/2;ctx.beginPath();ctx.moveTo(startX+cornerRadius,startY);ctx.lineTo(startX+nodeWidth-cornerRadius,startY);ctx.quadraticCurveTo(startX+nodeWidth,startY,startX+nodeWidth,startY+cornerRadius);ctx.lineTo(startX+nodeWidth,startY+nodeHeight-cornerRadius);ctx.quadraticCurveTo(startX+nodeWidth,startY+nodeHeight,startX+nodeWidth-cornerRadius,startY+nodeHeight);ctx.lineTo(startX+cornerRadius,startY+nodeHeight);ctx.quadraticCurveTo(startX,startY+nodeHeight,startX,startY+nodeHeight-cornerRadius);ctx.lineTo(startX,startY+cornerRadius);ctx.quadraticCurveTo(startX,startY,startX+cornerRadius,startY);ctx.closePath();ctx.fillStyle=color;ctx.fill();ctx.fillStyle=textColor;ctx.textAlign='center';ctx.textBaseline='middle';let textY=y-(textHeight/2)+6;for(const line of lines){ctx.fillText(line,x,textY);textY+=12}}
     function drawLine(p1,p2,options={}){if(!p1||!p2)return;const{color='#adb5bd',width=2}=options;ctx.beginPath();ctx.moveTo(p1[0],p1[1]);ctx.lineTo(p2[0],p2[1]);ctx.strokeStyle=color;ctx.lineWidth=width;ctx.stroke()}
 
 
-    // =================================================================
-    // 3. MAP VIEW RENDERERS
-    // =================================================================
     function drawCampusView(campusData) {
         currentMapData = campusData;
-        currentBuildingName = null; // We are at the campus level
+        currentBuildingName = null; 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         mapTitle.innerText = 'Campus Overview';
         floorControls.style.display = 'none';
@@ -146,7 +134,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const paths = campusData.paths || [];
         paths.forEach(p => drawLine(coords[p.from], coords[p.to]));
 
-        // Highlight path segment if active step is between buildings
         const activeNode = calculatedPath[activeStepIndex];
         const nextNode = calculatedPath[activeStepIndex + 1];
         if (activeNode && nextNode) {
@@ -181,7 +168,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const floorPaths = buildingData.paths.filter(p => p.floor === floor);
         floorPaths.forEach(p => drawLine(coords[p.from], coords[p.to]));
 
-        // Highlight current path segment
         const activeNode = calculatedPath[activeStepIndex];
         const nextNode = calculatedPath[activeStepIndex + 1];
         if (activeNode && nextNode) {
@@ -219,13 +205,8 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
     
-    // =================================================================
-    // 4. INTERACTIVITY & INITIALIZATION
-    // =================================================================
-
     async function updateMapForStep(stepIndex) {
         activeStepIndex = stepIndex;
-        // Highlight the active step in the list
         document.querySelectorAll('#route-steps-list li').forEach((li, index) => {
             li.classList.toggle('active', index === stepIndex);
         });
@@ -235,14 +216,13 @@ document.addEventListener('DOMContentLoaded', function () {
         const isCampusLevel = !node.includes('/');
 
         if (isCampusLevel || !buildingName.startsWith("Building")) {
-            drawCampusView(initialMapData); // Always use initial data for campus
+            drawCampusView(initialMapData); 
         } else {
-            // If we are already showing the correct building, just redraw
+           
             if (buildingName === currentBuildingName) {
                 drawBuildingView(currentMapData, activeFloor);
                 return;
             }
-            // Otherwise, fetch new building data
             if (!buildingDataCache[buildingName]) {
                 const response = await fetch(`/navigation/data/${buildingName.replace(' ', '_')}`);
                 buildingDataCache[buildingName] = await response.json();
@@ -262,10 +242,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 updateMapForStep(stepIndex);
             }
         });
-        // Highlight first step by default
         updateMapForStep(0);
     } else {
-        // Fallback for pages without a route yet
         if (initialMapType === 'building') {
             drawBuildingView(initialMapData, initialMapData.floors[0]);
         } else {

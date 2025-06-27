@@ -10,12 +10,9 @@ from sqlalchemy import func, desc
 bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 def admin_required():
-    # This check happens before every request to the blueprint
     if not current_user.is_authenticated or current_user.role != 'Admin':
-        # Abort is better than redirect here as it stops execution
-        # and can be caught by a proper error handler if needed.
         from flask import abort
-        abort(403) # Forbidden
+        abort(403)
 
 @bp.before_request
 @login_required
@@ -32,7 +29,6 @@ def panel():
 @bp.route('/reports')
 def reports():
     """Show facility utilization reports."""
-    # Query to count bookings per room
     bookings_per_room = db.session.query(
         Room.name,
         Building.name.label('building_name'),

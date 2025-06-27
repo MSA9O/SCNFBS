@@ -25,7 +25,6 @@ def seed_database(app):
         buildings = [b_a, b_b, b_c, b_d, b_e]
         db.session.add_all(buildings)
 
-        # Added new study rooms to the list
         bookable_rooms = [
             # Faculty bookable
             Room(name="Faculty Office", type="Room", building=b_a),
@@ -84,7 +83,6 @@ def seed_database(app):
 
         all_waypoints = {p['from'] for p in path_data_to_process} | {p['to'] for p in path_data_to_process}
         
-        # Added new rooms to the waypoint map
         room_to_waypoint_map = {
             "Faculty Office": f"Building A{SEPARATOR}Room 101 - Faculty Office",
             "Lab 101": f"Building B{SEPARATOR}Lab 101",

@@ -21,7 +21,7 @@ def find_shortest_path(start: str, end: str, accessible_only: bool = False) -> T
         return [start], 0
 
     graph = _load_graph(accessible_only)
-    queue = [(0, start, [])]  # (cost, node, path)
+    queue = [(0, start, [])]
     seen = set()
 
     while queue:
@@ -39,26 +39,17 @@ def find_shortest_path(start: str, end: str, accessible_only: bool = False) -> T
 
 
 def all_locations(role: str) -> List[str]:
-    """
-    Gets ALL valid start/end locations for navigation dropdowns.
-    Navigation is open to all locations for all roles.
-    The `role` parameter is kept for potential future use but is not currently used for filtering.
-    """
     SEPARATOR = " / "
     locations = set()
 
-    # Add all building names
     for b in Building.query.all():
         locations.add(b.name)
         
-    # Add all bookable rooms, regardless of type
     for r in Room.query.join(Building).all():
-        # No role-based filtering is applied here
         locations.add(f"{r.building.name}{SEPARATOR}{r.name}")
         
     return sorted(list(locations))
 
-# MODIFIED FUNCTION
 def get_path_directions(path: List[str]) -> List[Dict]:
     """Generates human-readable directions from a path list."""
     if not path or len(path) < 2:

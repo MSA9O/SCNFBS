@@ -10,11 +10,8 @@ bp = Blueprint('user', __name__, url_prefix='/user')
 @bp.route('/my-bookings')
 @login_required
 def my_bookings():
-    """Display the current user's past and upcoming bookings."""
     now = datetime.utcnow()
 
-    # Query reservations and join with related Room and Building
-    # to avoid extra database queries in the template.
     upcoming_bookings = current_user.reservations.filter(
         Reservation.end_time >= now,
         Reservation.status == 'Confirmed'
@@ -33,15 +30,12 @@ def my_bookings():
 @bp.route('/bookings/<int:booking_id>/cancel', methods=['POST'])
 @login_required
 def cancel_booking(booking_id):
-    """Cancel an upcoming booking."""
     booking = Reservation.query.get_or_404(booking_id)
 
-    # Security check: ensure the booking belongs to the current user
     if booking.user_id != current_user.id:
         from flask import abort
-        abort(403) # Forbidden
+        abort(403) 
 
-    # Users can only cancel upcoming bookings
     if booking.start_time < datetime.utcnow():
         flash("Cannot cancel a booking that has already started or passed.", "warning")
         return redirect(url_for('user.my_bookings'))

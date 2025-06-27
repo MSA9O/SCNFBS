@@ -24,7 +24,6 @@ def load_campus_paths_json():
             return json.load(f)
     return None
 
-# --- NEW ROUTE TO SERVE JSON DATA ---
 @bp_navigation.route("/navigation/data/<building_filename>")
 @login_required
 def building_data(building_filename):
@@ -58,7 +57,6 @@ def navigation():
         
         context["path"] = path
         context["distance"] = distance
-        # MODIFIED: get_path_directions now returns a list of dicts
         context["steps"] = get_path_directions(path) 
 
         if path:
